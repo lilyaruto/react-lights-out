@@ -39,7 +39,7 @@ class Board extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      board: new Array.from({}),
+      board: this.createBoard(),
       hasWon: ""
     }
     // TODO: set initial state
@@ -50,7 +50,12 @@ class Board extends Component {
   createBoard() {
     let board = [];
     // TODO: create array-of-arrays of true/false values
-    
+    for (let i = 0; i < this.props.nrows; i++) {
+      board[i] = [];
+      for (let j = 0; j < this.props.ncols; j++) {
+        board[i][j] = Math.round(Math.random());
+      }
+    }
     return board
   }
 
@@ -82,11 +87,14 @@ class Board extends Component {
   /** Render game board or winning message. */
 
   render() {
+    console.log(this.state.board);
     return(
       <div className="board_container">
         <table className="board_table">
           <tbody>
-
+            {this.state.board.map(row => 
+              <tr>{row.map(item => <Cell isLit={item}/>)}</tr>
+            )}
           </tbody>
         </table>
       </div>
