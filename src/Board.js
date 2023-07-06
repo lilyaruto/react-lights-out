@@ -33,14 +33,15 @@ class Board extends Component {
 
   static defaultProps = {
     nrows: 5,
-    ncols: 5
+    ncols: 5,
+    chanceLightStartsOn: 0.25
   }
 
   constructor(props) {
     super(props);
     this.state = {
       board: this.createBoard(),
-      hasWon: ""
+      hasWon: false
     }
     // TODO: set initial state
   }
@@ -48,15 +49,22 @@ class Board extends Component {
   /** create a board nrows high/ncols wide, each cell randomly lit or unlit */
 
   createBoard() {
-    let board = [];
+    //let board = [];
+    let board = [
+      [1, 1, 0, 0, 0],
+      [1, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+    ];
     // TODO: create array-of-arrays of true/false values
-    for (let i = 0; i < this.props.nrows; i++) {
-      board[i] = [];
-      for (let j = 0; j < this.props.ncols; j++) {
-        board[i][j] = Math.round(Math.random());
-      }
-    }
-    return board
+    // for (let i = 0; i < this.props.nrows; i++) {
+    //   board[i] = [];
+    //   for (let j = 0; j < this.props.ncols; j++) {
+    //     board[i][j] = Math.round(Math.random());
+    //   }
+    // }
+    return board;
   }
 
   /** handle changing a cell: update board & determine if winner */
@@ -65,13 +73,18 @@ class Board extends Component {
     let {ncols, nrows} = this.props;
     let board = this.state.board;
     let [y, x] = coord.split("-").map(Number);
+    flipCell(y, x);
+    flipCell(y, x - 1);
+    flipCell(y, x + 1);
+    flipCell(y - 1, x);
+    flipCell(y + 1, x);
 
 
     function flipCell(y, x) {
       // if this coord is actually on board, flip it
 
       if (x >= 0 && x < ncols && y >= 0 && y < nrows) {
-        board[y][x] = !board[y][x];
+        board[y][x] = Number(!board[y][x]);
       }
     }
 
@@ -80,23 +93,32 @@ class Board extends Component {
     // win when every cell is turned off
     // TODO: determine is the game has been won
 
-    this.setState({board: "", hasWon: ""});
+    this.setState({board: board, hasWon: board.every(row => row.every(val => !val))});
   }
 
 
   /** Render game board or winning message. */
 
   render() {
+    let tableBoard = [];
+    for (let i = 0; i < this.props.nrows; i++) {
+      let row = [];
+      for (let j = 0; j < this.props.ncols; j++) {
+        let coord = `${i}-${j}`;
+        row.push(<Cell key={coord} isLit={this.state.board[i][j]} flipCellsAroundMe={() => this.flipCellsAround(coord)}/>)
+      }
+      tableBoard.push(<tr key={i}>{row}</tr>);
+    }
     console.log(this.state.board);
+    console.log(this.state.hasWon);
     return(
       <div className="board_container">
-        <table className="board_table">
+        <table className={this.state.hasWon ? "hidden" : "board_table"}>
           <tbody>
-            {this.state.board.map(row => 
-              <tr>{row.map(item => <Cell isLit={item}/>)}</tr>
-            )}
+            {tableBoard}
           </tbody>
         </table>
+        <p className={this.state.hasWon ? "show-win" : "hidden"}>Win</p>
       </div>
     );
 
