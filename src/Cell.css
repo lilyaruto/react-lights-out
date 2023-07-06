@@ -1,9 +1,11 @@
-.Cell {
+.cell {
   height: 100px;
   width: 100px;
-  background-color: darkgray;
+  background-color: rgb(43, 41, 56);
 }
 
-.Cell-lit {
-  background-color: white;
+.cell-lit {
+  height: 100px;
+  width: 100px;
+  background-color: rgb(49, 208, 230);
 }
